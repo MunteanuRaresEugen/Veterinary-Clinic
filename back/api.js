@@ -49,6 +49,33 @@ router.route("/animals").post((request, response) => {
     });
 });
 
+router.route("/editanimals").post(async (req, res) => {
+  console.log(req.body);
+  const result = await dboperations.updateAnimal(req.body);
+  console.log(result);
+  res.sendStatus(result.found ? 200 : 400);
+});
+
+router.route("/editvisit").post(async (req, res) => {
+  const result = await dboperations.updateVisit(req.body);
+  console.log(result.found);
+  res.sendStatus(result.found ? 200 : 400);
+});
+
+router.route("/deleteuser").delete(async (req, res) => {
+  console.log(req.body);
+  const result = await dboperations.deleteUser(req.body);
+  console.log(result.deleted);
+  res.sendStatus(result.deleted ? 200 : 400);
+});
+
+router.route("/deletemedication").delete(async (req, res) => {
+  console.log(req.body);
+  const result = await dboperations.deleteMedication(req.body);
+  console.log(result.deleted);
+  res.sendStatus(result.deleted ? 200 : 400);
+});
+
 router.route("/login").post(async (req, res) => {
   console.log(req.body);
   const result = await dboperations.login(req.body);
@@ -71,6 +98,56 @@ router.route("/register").post(async (req, res) => {
     });*/
   const result = await dboperations.register(req.body);
   res.sendStatus(result.registered ? 201 : 400);
+});
+
+// ceva
+router.route("/species").get(async (req, res) => {
+  const result = await dboperations.speciesAnimal(req.body);
+  console.log(result.species[0]);
+  //res.json(result.species[0]).status(result.found ? 200 : 400);
+  if (result.found) res.json(result.species[0]).status(200);
+  else res.sendStatus(400);
+});
+
+router.route("/visitanimal").get(async (req, res) => {
+  const result = await dboperations.visitAnimal(req.body);
+  console.log(result.found);
+  //res.json(result.species[0]).status(result.found ? 200 : 400);
+  if (result.found) res.json(result.animal[0]).status(200);
+  else res.sendStatus(400);
+});
+
+router.route("/viewanimaldiagnosis").get(async (req, res) => {
+  const result = await dboperations.viewAnimaldiagnosis(req.body);
+  console.log(result.diagnosis[0]);
+  //res.json(result.species[0]).status(result.found ? 200 : 400);
+  if (result.found) res.json(result.diagnosis).status(200);
+  else res.sendStatus(400);
+});
+
+router.route("/visitnumber").get(async (req, res) => {
+  const result = await dboperations.visitNumber();
+  console.log(result.animalDB[0]);
+  //res.json(result.species[0]).status(result.found ? 200 : 400);
+  if (result.found) res.json(result.animalDB[0]).status(200);
+  else res.sendStatus(400);
+});
+
+router.route("/animalvaccinated").get(async (req, res) => {
+  const result = await dboperations.animalVaccinated(req.body);
+  //console.log(result.animalDB[0]);
+  //res.json(result.species[0]).status(result.found ? 200 : 400);
+  if (result.found) res.json(result.species[0]).status(200);
+  else res.sendStatus(400);
+});
+
+router.route("/vetappointments").get(async (req, res) => {
+  const result = await dboperations.vetAppointments(req.body);
+  //console.log(result.animalDB[0]);
+  //res.json(result.species[0]).status(result.found ? 200 : 400);
+  if (result.found) res.json(result.vet.recordset[0]).status(200);
+  else res.sendStatus(400);
+  console.log(result.vet);
 });
 
 var port = process.env.PORT || 8090;

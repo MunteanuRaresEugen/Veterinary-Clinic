@@ -37,6 +37,97 @@ async function addAnimal(animal) {
   }
 }
 
+async function updateAnimal(animal) {
+  try {
+    let pool = await sql.connect(config);
+    let updatedAnimal = await pool.query(
+      `UPDATE Animals
+       SET Name = '${animal.Name}', Weight = ${animal.Weight}
+       WHERE AnimalID = '${animal.AnimalID}'`
+    );
+    console.log(updatedAnimal);
+    if (updatedAnimal.rowsAffected[0] === 0)
+      return {
+        found: false,
+      };
+    else
+      return {
+        found: true,
+      };
+  } catch (err) {
+    console.log(err);
+    return { found: false };
+  }
+}
+
+async function updateVisit(visit) {
+  try {
+    let pool = await sql.connect(config);
+    let updatedVisit = await pool.query(
+      `UPDATE Visits
+       SET VisitDate = '${visit.VisitDate}'
+       WHERE VisitID = '${visit.VisitID}'`
+    );
+
+    if (updatedVisit.rowsAffected[0] === 0)
+      return {
+        found: false,
+      };
+    else
+      return {
+        found: true,
+      };
+  } catch (err) {
+    console.log(err);
+    return { found: false };
+  }
+}
+
+async function deleteUser(user) {
+  try {
+    let pool = await sql.connect(config);
+    let deletedUser = await pool.query(
+      `DELETE FROM Owners WHERE FirstName = '${user.FirstName}' AND LastName = '${user.LastName}'`
+    );
+    console.log(deletedUser);
+    if (deletedUser.rowsAffected[0] === 0)
+      return {
+        deleted: false,
+      };
+    else
+      return {
+        deleted: true,
+      };
+  } catch (err) {
+    console.log(err);
+    return {
+      deleted: false,
+    };
+  }
+}
+
+async function deleteMedication(medication) {
+  try {
+    let pool = await sql.connect(config);
+    let deletedMedication = await pool.query(
+      `DELETE FROM Medication
+       WHERE Diagnosis = '${medication.Diagnosis}'`
+    );
+
+    if (deletedMedication.rowsAffected[0] === 0)
+      return {
+        deleted: false,
+      };
+    else
+      return {
+        deleted: true,
+      };
+  } catch (err) {
+    console.log(err);
+    return { deleted: false };
+  }
+}
+
 async function login(user) {
   try {
     const email = user.email;
@@ -99,10 +190,125 @@ async function register(user) {
   }
 }
 
+async function speciesAnimal(species) {
+  try {
+    let pool = await sql.connect(config);
+    let animalDB = await pool.query(
+      `SELECT A.Name,S.Name from Animals A
+       JOIN Species S ON A.SpeciesID = S.SpeciesID
+       WHERE S.Name =  '${species.Name}'`
+    );
+    console.log(animalDB);
+    if (animalDB.recordset.length) found = true;
+    else found = false;
+    return { species: animalDB.recordsets, found: found };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function visitAnimal(animal) {
+  try {
+    let pool = await sql.connect(config);
+    let animalDB = await pool.query(
+      `SELECT A.Name,A.Weight,V.FirstName + ' ' + V.LastName AS VetName ,Vis.VisitDate from Animals A
+      JOIN Visits Vis ON A.AnimalID = Vis.AnimalID
+      JOIN Vets V ON Vis.VetID = V.VetID
+      WHERE A.Name = '${animal.Name}'`
+    );
+    //console.log(animalDB);
+    if (animalDB.recordset.length) found = true;
+    else found = false;
+    return { animal: animalDB.recordsets, found: found };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function viewAnimaldiagnosis(diagnosis) {
+  try {
+    let pool = await sql.connect(config);
+    let animalDB = await pool.query(
+      `SELECT A.Name,M.Diagnosis,M.Treatment from Animals A
+      JOIN History H on A.AnimalID = H.AnimalID
+      JOIN Medication M on H.MedicationID = M.MedicationID
+      WHERE M.Diagnosis = '${diagnosis.Diagnosis}'
+      GROUP BY A.Name,M.Diagnosis,M.Treatment`
+    );
+    if (animalDB.recordset.length) found = true;
+    else found = false;
+    return { diagnosis: animalDB.recordsets, found: found };
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function visitNumber() {
+  try {
+    let pool = await sql.connect(config);
+    let animalDB = await pool.query(
+      `SELECT COUNT(Visits.VisitID) AS NbVisits,Animals.Name from Visits
+      JOIN Animals on Visits.AnimalID = Animals.AnimalID
+      GROUP BY Animals.Name
+      HAVING COUNT(Visits.VisitID) > 0`
+    );
+    if (animalDB.recordset.length) found = true;
+    else found = false;
+    return { animalDB: animalDB.recordsets, found: found };
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function animalVaccinated(species) {
+  try {
+    let pool = await sql.connect(config);
+    let animalDB = await pool.query(
+      `SELECT A.Name,Species.Name AS SpeciesName,O.FirstName + O.LastName AS NameOwner from Owners O
+      JOIN Animals A on A.OwnerID = O.OwnerID
+      JOIN Species on A.SpeciesID = Species.SpeciesID
+      WHERE Species.Name = '${species.Name}' AND A.Vaccinated = 1`
+    );
+    if (animalDB.recordset.length) found = true;
+    else found = false;
+    return { species: animalDB.recordsets, found: found };
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function vetAppointments(vet) {
+  try {
+    let pool = await sql.connect(config);
+    let vetDB = await pool.query(
+      `SELECT V.FirstName + ' ' + V.LastName AS FullName,COUNT(*) AS Appointments FROM Vets V
+      JOIN Visits Vis ON V.VetID = Vis.VetID
+      WHERE V.LastName = '${vet.LastName}' AND Vis.VisitDate = '${vet.VisitDate}'
+      GROUP BY V.FirstName,V.LastName
+      HAVING COUNT(*) < 3`
+    );
+    if (vetDB.recordset.length) found = true;
+    else found = false;
+    return { vet: vetDB, found: found };
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 module.exports = {
   getAnimals: getAnimals,
   getAnimal: getAnimal,
   addAnimal: addAnimal,
   login: login,
   register: register,
+  updateAnimal: updateAnimal,
+  updateVisits: updateVisit,
+  deleteUser: deleteUser,
+  deleteMedication: deleteMedication,
+  speciesAnimal: speciesAnimal,
+  visitAnimal: visitAnimal,
+  viewAnimaldiagnosis: viewAnimaldiagnosis,
+  visitNumber: visitNumber,
+  animalVaccinated: animalVaccinated,
+  vetAppointments: vetAppointments,
 };
