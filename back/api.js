@@ -21,17 +21,22 @@ router.use((request, response, next) => {
   next();
 });
 
-router.route("/animals").get((request, response) => {
+/*router.route("/animals").get((request, response) => {
   dboperations.getAnimals().then((result) => {
     //console.log(result);
     response.json(result[0]);
   });
+});*/
+
+router.route("/animals").get(async (req, res) => {
+  const result = await dboperations.getAnimals();
+  res.status(200).json(result[0]);
 });
 
 router.route("/animals/:id").get((request, response) => {
   dboperations.getAnimal(request.params.id).then((result) => {
     //console.log(result);
-    response.json(result[0]);
+    response.sendStatus(200).json(result[0]);
   });
 });
 
