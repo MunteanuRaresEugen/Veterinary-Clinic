@@ -140,19 +140,17 @@ router.route("/visitnumber").get(async (req, res) => {
   else res.sendStatus(400);
 });
 
-router.route("/animalvaccinated").get(async (req, res) => {
-  const result = await dboperations.animalVaccinated(req.body);
-  //console.log(result.animalDB[0]);
-  //res.json(result.species[0]).status(result.found ? 200 : 400);
-  if (result.found) res.json(result.species[0]).status(200);
+router.route("/animalweight").get(async (req, res) => {
+  const result = await dboperations.animalWeight(req.query);
+  console.log(res.query, found);
+  if (result.found) res.json(result.species).status(200);
   else res.sendStatus(400);
 });
 
 router.route("/vetappointments").get(async (req, res) => {
-  const result = await dboperations.vetAppointments(req.body);
-  //console.log(result.animalDB[0]);
-  //res.json(result.species[0]).status(result.found ? 200 : 400);
-  if (result.found) res.json(result.vet.recordset[0]).status(200);
+  const result = await dboperations.vetAppointments(req.query);
+  console.log(res.query, found);
+  if (result.found) res.json(result.vet).status(200);
   else res.sendStatus(400);
   console.log(result.vet);
 });

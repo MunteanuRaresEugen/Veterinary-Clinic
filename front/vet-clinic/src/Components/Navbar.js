@@ -9,18 +9,18 @@ export const Navbar = () => {
       </div>
       <nav className="item">
         <ul className="ul">
-          <li>
+          <>
             <Link to="/login">Login</Link>
-          </li>
-          <li>
+          </>
+          <>
             <Link to="/register">Register</Link>
-          </li>
-          <li>
+          </>
+          <>
             <Link to="/view">View</Link>
-          </li>
-          <li>
+          </>
+          <>
             <Link to="/operations">Operations</Link>
-          </li>
+          </>
         </ul>
       </nav>
     </div>

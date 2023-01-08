@@ -549,6 +549,162 @@ const View = () => {
     </>
   );
 
+  // animale din specia x care au mai mult de y kg
+
+  const [speciesNameWeight, setSpeciesNameWeight] = useState("");
+  const [weight, setWeight] = useState("");
+  const [animalsweight, setAnimalsWeight] = useState([]);
+  const [isClickedW, setIsClickedW] = useState(false);
+  const [isClickedW1, setIsClickedW1] = useState(false);
+
+  const clickWeight = async (event) => {
+    event.preventDefault();
+    setIsClickedW1(true);
+
+    const params = new URLSearchParams({
+      Name: speciesNameWeight,
+      Weight: weight,
+    }).toString();
+    const res = await fetch(url + `/animalweight?${params}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (res.status === 200) {
+      const result = await res.json();
+      setAnimalsWeight(result);
+    }
+  };
+
+  const formWeight = (
+    <div className="form">
+      <form onSubmit={clickWeight}>
+        <div className="input-container">
+          <label>Species Name</label>
+          <input
+            type="text"
+            onChange={(e) => setSpeciesNameWeight(e.target.value)}
+            required
+          />
+        </div>
+        <div className="input-container">
+          <label>Weight{"(kg)"}</label>
+          <input
+            type="text"
+            onChange={(e) => setWeight(e.target.value)}
+            required
+          />
+        </div>
+        <div className="button-container">
+          <input type="submit" value={"Submit"} />
+        </div>
+      </form>
+    </div>
+  );
+
+  const showWeightList = (
+    <table className="table">
+      <tr>
+        <td>Animal Name</td>
+        <td>Owner Name</td>
+        <td>Weight{"(kg)"}</td>
+      </tr>
+      <tbody>
+        {animalsweight.map((result) => (
+          <tr>
+            <td key={result.AnimalID}>{result.Name} </td>
+            <td key={result.AnimalID}>{result.NameOwner} </td>
+            <td key={result.AnimalID}>{result.Weight} </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+
+  // veterinari care au mai putin de 10 programri intr o data
+
+  const [visitVet, setVisitVet] = useState("");
+  const [date, setDate] = useState("");
+  const [numberApp, setNumberApp] = useState("");
+  const [appointments, setAppointments] = useState([]);
+  const [isClickedD, setIsClickedD] = useState(false);
+  const [isClickedD1, setIsClickedD1] = useState(false);
+
+  const clickAppointments = async (event) => {
+    event.preventDefault();
+    setIsClickedD1(true);
+
+    const params = new URLSearchParams({
+      LastName: visitVet,
+      VisitDate: date,
+      Nbappointments: numberApp,
+    }).toString();
+    const res = await fetch(url + `/vetappointments?${params}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (res.status === 200) {
+      const result = await res.json();
+      setAppointments(result);
+    }
+  };
+
+  const formAppointments = (
+    <div className="form">
+      <form onSubmit={clickAppointments}>
+        <div className="input-container">
+          <label>Last Name</label>
+          <input
+            type="text"
+            onChange={(e) => setVisitVet(e.target.value)}
+            required
+          />
+        </div>
+        <div className="input-container">
+          <label>Visit Date{"(yyyy-mm-dd)"}</label>
+          <input
+            type="text"
+            onChange={(e) => setDate(e.target.value)}
+            required
+          />
+        </div>
+        <div className="input-container">
+          <label>Number of Appointments</label>
+          <input
+            type="text"
+            onChange={(e) => setNumberApp(e.target.value)}
+            required
+          />
+        </div>
+        <div className="button-container">
+          <input type="submit" value={"Submit"} />
+        </div>
+      </form>
+    </div>
+  );
+
+  const showAppointments = (
+    <table className="table">
+      <tr>
+        <td>Vet Name</td>
+        <td>Appointments number</td>
+      </tr>
+      <tbody>
+        {appointments.map((result) => (
+          <tr>
+            <td key={result.VetID}>{result.FullName} </td>
+            <td key={result.VetID}>{result.Appointments} </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+
   return (
     <div>
       <Navbar />
@@ -624,6 +780,22 @@ const View = () => {
           {isClicked14 && <div>{showlistnumbervisits}</div>}
           <button className="button" onClick={clickAnimalsVisits}>
             {!isClicked14 ? "View animals visits number" : "Hide"}
+          </button>
+        </div>
+        <div className="child">
+          {isClickedW && <>{formWeight} </>}
+          {isClickedW1 && isClickedW && <>{showWeightList} </>}
+          <button className="button" onClick={() => setIsClickedW(!isClickedW)}>
+            {!isClickedW
+              ? "View animals of specified species and kilos"
+              : "Hide"}
+          </button>
+        </div>
+        <div className="child">
+          {isClickedD && <>{formAppointments} </>}
+          {isClickedD1 && isClickedD && <>{showAppointments} </>}
+          <button className="button" onClick={() => setIsClickedD(!isClickedD)}>
+            {!isClickedD ? "View vet appointments on a date" : "Hide"}
           </button>
         </div>
       </div>

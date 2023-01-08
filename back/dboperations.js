@@ -249,6 +249,8 @@ async function viewAnimaldiagnosis(diagnosis) {
   }
 }
 
+// animal + numarul vizitelor daca exista // 1
+
 async function visitNumber() {
   try {
     let pool = await sql.connect(config);
@@ -266,18 +268,20 @@ async function visitNumber() {
   }
 }
 
-async function animalVaccinated(species) {
+// animalele din specia y care au mai mult de x kg // 1
+
+async function animalWeight(species) {
   try {
     let pool = await sql.connect(config);
     let animalDB = await pool.query(
-      `SELECT A.Name,Species.Name AS SpeciesName,O.FirstName + O.LastName AS NameOwner from Owners O
-      JOIN Animals A on A.OwnerID = O.OwnerID
+      `SELECT A.AnimalID,A.Name,Species.Name AS SpeciesName,O.FirstName + ' ' + O.LastName AS NameOwner,A.Weight FROM Owners O
+      JOIN Animals A ON A.OwnerID = O.OwnerID
       JOIN Species on A.SpeciesID = Species.SpeciesID
-      WHERE Species.Name = '${species.Name}' AND A.Vaccinated = 1`
+      WHERE Species.Name = '${species.Name}' AND A.Weight > '${species.Weight}'`
     );
     if (animalDB.recordset.length) found = true;
     else found = false;
-    return { species: animalDB.recordsets, found: found };
+    return { species: animalDB.recordset, found: found };
   } catch (err) {
     console.log(err);
   }
@@ -287,15 +291,15 @@ async function vetAppointments(vet) {
   try {
     let pool = await sql.connect(config);
     let vetDB = await pool.query(
-      `SELECT V.FirstName + ' ' + V.LastName AS FullName,COUNT(*) AS Appointments FROM Vets V
+      `SELECT V.VetID,V.FirstName + ' ' + V.LastName AS FullName,COUNT(*) AS Appointments FROM Vets V
       JOIN Visits Vis ON V.VetID = Vis.VetID
       WHERE V.LastName = '${vet.LastName}' AND Vis.VisitDate = '${vet.VisitDate}'
-      GROUP BY V.FirstName,V.LastName
-      HAVING COUNT(*) < 3`
+      GROUP BY V.FirstName,V.LastName,V.VetID
+      HAVING COUNT(*) < '${vet.Nbappointments}'`
     );
     if (vetDB.recordset.length) found = true;
     else found = false;
-    return { vet: vetDB, found: found };
+    return { vet: vetDB.recordset, found: found };
   } catch (err) {
     console.log(err);
   }
@@ -320,7 +324,7 @@ async function notvaccinatedanimals() {
   }
 }
 
-// vizite cu animale vaccinate/nu
+// vizite cu animale vaccinate/nu // 1
 
 async function visitnovacc(animal) {
   try {
@@ -338,7 +342,7 @@ async function visitnovacc(animal) {
   }
 }
 
-// vizite la un veterinar pt specie y
+// vizite la un veterinar pt specie y // 1
 
 async function visitspecies(species) {
   try {
@@ -357,7 +361,7 @@ async function visitspecies(species) {
   }
 }
 
-//istoricul owner + animal-
+//istoricul owner + animal- //1
 async function historyanimal(data) {
   try {
     let pool = await sql.connect(config);
@@ -389,7 +393,7 @@ module.exports = {
   visitAnimal: visitAnimal,
   viewAnimaldiagnosis: viewAnimaldiagnosis,
   visitNumber: visitNumber,
-  animalVaccinated: animalVaccinated,
+  animalWeight: animalWeight,
   vetAppointments: vetAppointments,
   notvaccinatedanimals: notvaccinatedanimals,
   visitnovacc: visitnovacc,
