@@ -210,12 +210,12 @@ async function speciesAnimal(species) {
   }
 }
 
-//Vizitele unui animal dat
+//Vizitele unui animal dat //1
 async function visitAnimal(animal) {
   try {
     let pool = await sql.connect(config);
     let animalDB = await pool.query(
-      `SELECT A.Name,A.Weight,V.FirstName + ' ' + V.LastName AS VetName ,Vis.VisitDate from Animals A
+      `SELECT A.AnimalID,A.Name,A.Weight,V.FirstName + ' ' + V.LastName AS VetName ,Vis.VisitDate from Animals A
       JOIN Visits Vis ON A.AnimalID = Vis.AnimalID
       JOIN Vets V ON Vis.VetID = V.VetID
       WHERE A.Name = '${animal.Name}'`
@@ -223,25 +223,27 @@ async function visitAnimal(animal) {
     //console.log(animalDB);
     if (animalDB.recordset.length) found = true;
     else found = false;
-    return { animal: animalDB.recordsets, found: found };
+    return { animal: animalDB.recordset, found: found };
   } catch (error) {
     console.log(error);
   }
 }
 
+// animalele cu diagnosticul x  //1
+
 async function viewAnimaldiagnosis(diagnosis) {
   try {
     let pool = await sql.connect(config);
     let animalDB = await pool.query(
-      `SELECT A.Name,M.Diagnosis,M.Treatment from Animals A
+      `SELECT A.AnimalID,A.Name,M.Diagnosis,M.Treatment from Animals A
       JOIN History H on A.AnimalID = H.AnimalID
       JOIN Medication M on H.MedicationID = M.MedicationID
       WHERE M.Diagnosis = '${diagnosis.Diagnosis}'
-      GROUP BY A.Name,M.Diagnosis,M.Treatment`
+      GROUP BY A.Name,M.Diagnosis,M.Treatment,A.AnimalID`
     );
     if (animalDB.recordset.length) found = true;
     else found = false;
-    return { diagnosis: animalDB.recordsets, found: found };
+    return { diagnosis: animalDB.recordset, found: found };
   } catch (err) {
     console.log(err);
   }
@@ -251,14 +253,14 @@ async function visitNumber() {
   try {
     let pool = await sql.connect(config);
     let animalDB = await pool.query(
-      `SELECT COUNT(Visits.VisitID) AS NbVisits,Animals.Name from Visits
-      JOIN Animals on Visits.AnimalID = Animals.AnimalID
-      GROUP BY Animals.Name
-      HAVING COUNT(Visits.VisitID) > 0`
+      `SELECT A.AnimalID,A.Name,COUNT(*) AS Nb_of_Visits FROM Visits V
+      JOIN Animals A ON V.AnimalID = A.AnimalID
+      GROUP BY A.Name,A.AnimalID
+      HAVING COUNT(*) > 0`
     );
     if (animalDB.recordset.length) found = true;
     else found = false;
-    return { animalDB: animalDB.recordsets, found: found };
+    return { animalDB: animalDB.recordset, found: found };
   } catch (err) {
     console.log(err);
   }

@@ -105,7 +105,7 @@ router.route("/register").post(async (req, res) => {
   res.sendStatus(result.registered ? 201 : 400);
 });
 
-// ceva
+// join simple
 router.route("/species").get(async (req, res) => {
   const result = await dboperations.speciesAnimal(req.query);
   //console.log(result.species[0]);
@@ -116,26 +116,27 @@ router.route("/species").get(async (req, res) => {
 });
 
 router.route("/visitanimal").get(async (req, res) => {
-  const result = await dboperations.visitAnimal(req.body);
-  console.log(result.found);
+  const result = await dboperations.visitAnimal(req.query);
+  console.log(res.query, found);
   //res.json(result.species[0]).status(result.found ? 200 : 400);
-  if (result.found) res.json(result.animal[0]).status(200);
+  if (result.found) res.json(result.animal).status(200);
   else res.sendStatus(400);
 });
 
 router.route("/viewanimaldiagnosis").get(async (req, res) => {
-  const result = await dboperations.viewAnimaldiagnosis(req.body);
-  console.log(result.diagnosis[0]);
+  const result = await dboperations.viewAnimaldiagnosis(req.query);
+  //console.log(result.diagnosis);
   //res.json(result.species[0]).status(result.found ? 200 : 400);
+  console.log(res.query, found);
   if (result.found) res.json(result.diagnosis).status(200);
   else res.sendStatus(400);
 });
 
 router.route("/visitnumber").get(async (req, res) => {
   const result = await dboperations.visitNumber();
-  console.log(result.animalDB[0]);
+  console.log(result.animalDB);
   //res.json(result.species[0]).status(result.found ? 200 : 400);
-  if (result.found) res.json(result.animalDB[0]).status(200);
+  if (result.found) res.json(result.animalDB).status(200);
   else res.sendStatus(400);
 });
 

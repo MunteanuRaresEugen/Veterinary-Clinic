@@ -373,6 +373,181 @@ const View = () => {
       </tbody>
     </table>
   );
+  // animal + veterinar + vizita
+  const [animalVisit, setAnimalVisit] = useState("");
+
+  const [animal2, setAnimal2] = useState([]);
+  const [isClicked10, setIsClicked10] = useState(false);
+  const [isClicked11, setIsClicked11] = useState(false);
+
+  const viewAnimalVisit = async (event) => {
+    event.preventDefault();
+    setIsClicked11(true);
+
+    const params = new URLSearchParams({
+      Name: animalVisit,
+    }).toString();
+    const res = await fetch(url + `/visitanimal?${params}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (res.status === 200) {
+      const result = await res.json();
+      setAnimal2(result);
+    }
+  };
+
+  const formAnimalsVisit = (
+    <div className="form">
+      <form onSubmit={viewAnimalVisit}>
+        <div className="input-container">
+          <label>Animal Name</label>
+          <input
+            type="text"
+            onChange={(e) => setAnimalVisit(e.target.value)}
+            required
+          />
+        </div>
+        <div className="button-container">
+          <input type="submit" value={"Submit"} />
+        </div>
+      </form>
+    </div>
+  );
+
+  const showAnimalVisit = (
+    <table className="table">
+      <tr>
+        <td>Animal Name</td>
+        <td>Weight</td>
+        <td>Vet Name</td>
+        <td>Visit Date</td>
+      </tr>
+      <tbody>
+        {animal2.map((result) => (
+          <tr>
+            <td key={result.AnimalID}>{result.Name} </td>
+            <td key={result.AnimalID}>{result.Weight} </td>
+            <td key={result.AnimalID}>{result.VetName} </td>
+            <td key={result.AnimalID}>{result.VisitDate} </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+
+  // animalele cu diagnosticul x
+
+  const [animalDiagnosis, setAnimalDiagnosis] = useState("");
+
+  const [animalRes, setAnimalRes] = useState([]);
+  const [isClicked12, setIsClicked12] = useState(false);
+  const [isClicked13, setIsClicked13] = useState(false);
+
+  const viewDiagnosis = async (event) => {
+    event.preventDefault();
+
+    setIsClicked13(true);
+
+    const params = new URLSearchParams({
+      Diagnosis: animalDiagnosis,
+    }).toString();
+    const res = await fetch(url + `/viewanimaldiagnosis?${params}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (res.status === 200) {
+      const result = await res.json();
+      setAnimalRes(result);
+    }
+  };
+
+  const formAnimalDiagnosis = (
+    <div className="form">
+      <form onSubmit={viewDiagnosis}>
+        <div className="input-container">
+          <label>Diagnosis</label>
+          <input
+            type="text"
+            onChange={(e) => setAnimalDiagnosis(e.target.value)}
+            required
+          />
+        </div>
+        <div className="button-container">
+          <input type="submit" value={"Submit"} />
+        </div>
+      </form>
+    </div>
+  );
+
+  const showAnimalDiagnosis = (
+    <table className="table">
+      <tr>
+        <td>Animal Name</td>
+        <td>Diagnosis</td>
+        <td>Treatment</td>
+      </tr>
+      <tbody>
+        {animalRes.map((result) => (
+          <tr>
+            <td key={result.AnimalID}>{result.Name} </td>
+            <td key={result.AnimalID}>{result.Diagnosis} </td>
+            <td key={result.AnimalID}>{result.Treatment} </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+
+  // numarul de vizite a fiecarui animal
+
+  const [isClicked14, setIsClicked14] = useState(false);
+  const [animalsVisits, setAnimalsVisits] = useState([]);
+
+  const clickAnimalsVisits = async (event) => {
+    event.preventDefault();
+
+    const res = await fetch(url + "/visitnumber", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    setIsClicked14(!isClicked14);
+
+    if (res.status === 200) {
+      const results = await res.json();
+      setAnimalsVisits(results);
+
+      //console.log(animals);
+    }
+  };
+
+  const showlistnumbervisits = (
+    <>
+      <table className="table">
+        <tr>
+          <td>Name</td>
+          <td>Number of Visits</td>
+        </tr>
+        <tbody>
+          {animalsVisits.map((animal) => (
+            <tr>
+              <td key={animal.AnimalID}>{animal.Name} </td>
+              <td key={animal.AnimalID}>{animal.Nb_of_Visits} </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
+  );
 
   return (
     <div>
@@ -423,6 +598,32 @@ const View = () => {
           {isClicked9 && isClicked8 && <>{showAnimalsSpecies} </>}
           <button className="button" onClick={() => setIsClicked8(!isClicked8)}>
             {!isClicked8 ? "View animal from a selected species" : "Hide"}
+          </button>
+        </div>
+        <div className="child">
+          {isClicked10 && <>{formAnimalsVisit} </>}
+          {isClicked11 && isClicked10 && <>{showAnimalVisit} </>}
+          <button
+            className="button"
+            onClick={() => setIsClicked10(!isClicked10)}
+          >
+            {!isClicked10 ? "View animal visits" : "Hide"}
+          </button>
+        </div>
+        <div className="child">
+          {isClicked12 && <>{formAnimalDiagnosis} </>}
+          {isClicked13 && isClicked12 && <>{showAnimalDiagnosis} </>}
+          <button
+            className="button"
+            onClick={() => setIsClicked12(!isClicked12)}
+          >
+            {!isClicked12 ? "View animal with specified diagnosis" : "Hide"}
+          </button>
+        </div>
+        <div className="child">
+          {isClicked14 && <div>{showlistnumbervisits}</div>}
+          <button className="button" onClick={clickAnimalsVisits}>
+            {!isClicked14 ? "View animals visits number" : "Hide"}
           </button>
         </div>
       </div>
