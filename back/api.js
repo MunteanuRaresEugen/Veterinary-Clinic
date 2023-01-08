@@ -33,12 +33,12 @@ router.route("/animals").get(async (req, res) => {
   res.status(200).json(result[0]);
 });
 
-router.route("/animals/:id").get((request, response) => {
+/*router.route("/animals/:id").get((request, response) => {
   dboperations.getAnimal(request.params.id).then((result) => {
     //console.log(result);
     response.sendStatus(200).json(result[0]);
   });
-});
+});*/
 
 router.route("/animals").post((request, response) => {
   console.log(request.body);
@@ -107,10 +107,11 @@ router.route("/register").post(async (req, res) => {
 
 // ceva
 router.route("/species").get(async (req, res) => {
-  const result = await dboperations.speciesAnimal(req.body);
-  console.log(result.species[0]);
+  const result = await dboperations.speciesAnimal(req.query);
+  //console.log(result.species[0]);
   //res.json(result.species[0]).status(result.found ? 200 : 400);
-  if (result.found) res.json(result.species[0]).status(200);
+  console.log(res.query, found);
+  if (result.found) res.json(result.species).status(200);
   else res.sendStatus(400);
 });
 
@@ -153,6 +154,42 @@ router.route("/vetappointments").get(async (req, res) => {
   if (result.found) res.json(result.vet.recordset[0]).status(200);
   else res.sendStatus(400);
   console.log(result.vet);
+});
+
+//owneri care au animale nevaccinate
+router.route("/novaccination").get(async (req, res) => {
+  const result = await dboperations.notvaccinatedanimals();
+  if (result.found) res.json(result.ownerDB).status(200);
+  else res.sendStatus(400);
+});
+
+//toate vizitele cu animale nevaccinate.nevaccinat()
+router.route("/visitselectvaccination").get(async (req, res) => {
+  const result = await dboperations.visitnovacc(req.query);
+  //console.log(result.body, found);
+  console.log(req.query);
+  console.log(result.visitDB, found);
+  if (result.found) res.json(result.visitDB).status(200);
+  else res.sendStatus(400);
+});
+
+//
+
+router.route("/visitspeciesname").get(async (req, res) => {
+  const result = await dboperations.visitspecies(req.query);
+  //console.log(result.body, found);
+  console.log(req.query);
+  console.log(result.vetDB, found);
+  if (result.found) res.json(result.vetDB).status(200);
+  else res.sendStatus(400);
+});
+
+router.route("/history").get(async (req, res) => {
+  const result = await dboperations.historyanimal(req.query);
+  console.log(req.query);
+  console.log(result.historyDB, found);
+  if (result.found) res.json(result.historyDB).status(200);
+  else res.sendStatus(400);
 });
 
 var port = process.env.PORT || 8090;

@@ -7,8 +7,8 @@ const Operations = () => {
   return (
     <div>
       <Navbar />
-      Operations that user can acces:
-      <br />
+      <p style={{ margin: "1px" }}>Operations that user can acces:</p>
+
       <div className="title">
         <Link
           to="/insertanimal"

@@ -6,13 +6,14 @@ async function getAnimals() {
   try {
     let pool = await sql.connect(config);
     let anims = await pool.request().query("SELECT * from Animals");
+    console.log("xxxxxxx");
     return anims.recordsets;
   } catch (error) {
     console.log(error);
   }
 }
 
-async function getAnimal(animalid) {
+/*async function getAnimal(animalid) {
   try {
     let pool = await sql.connect(config);
     let anim = await pool
@@ -23,7 +24,7 @@ async function getAnimal(animalid) {
   } catch (error) {
     console.log(error);
   }
-}
+}*/
 
 async function addAnimal(animal) {
   try {
@@ -190,23 +191,26 @@ async function register(user) {
   }
 }
 
+//cereri simple(join)
+// animale dupa specie ///1
 async function speciesAnimal(species) {
   try {
     let pool = await sql.connect(config);
     let animalDB = await pool.query(
-      `SELECT A.Name,S.Name from Animals A
+      `SELECT A.Name,S.Name AS SpeciesName from Animals A
        JOIN Species S ON A.SpeciesID = S.SpeciesID
        WHERE S.Name =  '${species.Name}'`
     );
     console.log(animalDB);
     if (animalDB.recordset.length) found = true;
     else found = false;
-    return { species: animalDB.recordsets, found: found };
+    return { species: animalDB.recordset, found: found };
   } catch (error) {
     console.log(error);
   }
 }
 
+//Vizitele unui animal dat
 async function visitAnimal(animal) {
   try {
     let pool = await sql.connect(config);
@@ -295,9 +299,83 @@ async function vetAppointments(vet) {
   }
 }
 
+//subcereri
+
+// owneri care au animale nevaccinate
+//1111
+async function notvaccinatedanimals() {
+  try {
+    let pool = await sql.connect(config);
+    let ownerDB = await pool.query(
+      `SELECT O.OwnerID,O.FirstName,O.LastName,O.Age FROM Owners O
+      WHERE O.OwnerID IN (SELECT A.OwnerID FROM Animals A WHERE A.Vaccinated = 0)`
+    );
+    if (ownerDB.recordset.length) found = true;
+    else found = false;
+    return { ownerDB: ownerDB.recordset, found: found };
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+// vizite cu animale vaccinate/nu
+
+async function visitnovacc(animal) {
+  try {
+    let pool = await sql.connect(config);
+    let visitDB = await pool.query(
+      `SELECT V.VisitID,V.VisitDate,A.Name FROM Visits V
+      JOIN Animals A ON V.AnimalID = A.AnimalID
+      WHERE V.AnimalID IN (SELECT A.AnimalID FROM Animals A WHERE A.Vaccinated = ${animal.Vaccinated})`
+    );
+    if (visitDB.recordset.length) found = true;
+    else found = false;
+    return { visitDB: visitDB.recordset, found: found };
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+// vizite la un veterinar pt specie y
+
+async function visitspecies(species) {
+  try {
+    let pool = await sql.connect(config);
+    let vetDB = await pool.query(
+      `SELECT Vis.VisitID,V.FirstName,V.LastName,V.Specialization,A.Name,Vis.VisitDate FROM Vets V
+      JOIN Visits Vis ON V.VetID = Vis.VetID
+      JOIN Animals A ON A.AnimalID = Vis.AnimalID
+      WHERE Vis.AnimalID IN (SELECT A.AnimalID FROM Animals A JOIN Species S ON S.SpeciesID = A.SpeciesID WHERE S.Name = '${species.Name}')`
+    );
+    if (vetDB.recordset.length) found = true;
+    else found = false;
+    return { vetDB: vetDB.recordset, found: found };
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+//istoricul owner + animal-
+async function historyanimal(data) {
+  try {
+    let pool = await sql.connect(config);
+    let historyDB = await pool.query(
+      `SELECT A.AnimalID,A.Name,O.FirstName,O.LastName,M.Diagnosis,M.Treatment from History H 
+      JOIN Animals A ON A.AnimalID = H.AnimalID
+      JOIN Medication M ON H.MedicationID = M.MedicationID
+      JOIN Owners O ON A.OwnerID = O.OwnerID 
+      WHERE O.LastName = (SELECT O2.LastName FROM Owners O2 WHERE O2.LastName = '${data.LastName}') AND A.Name = '${data.Name}'`
+    );
+    if (historyDB.recordset.length) found = true;
+    else found = false;
+    return { historyDB: historyDB.recordset, found: found };
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 module.exports = {
   getAnimals: getAnimals,
-  getAnimal: getAnimal,
   addAnimal: addAnimal,
   login: login,
   register: register,
@@ -311,4 +389,8 @@ module.exports = {
   visitNumber: visitNumber,
   animalVaccinated: animalVaccinated,
   vetAppointments: vetAppointments,
+  notvaccinatedanimals: notvaccinatedanimals,
+  visitnovacc: visitnovacc,
+  visitspecies: visitspecies,
+  historyanimal: historyanimal,
 };

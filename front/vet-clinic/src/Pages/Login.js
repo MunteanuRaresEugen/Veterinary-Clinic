@@ -71,7 +71,7 @@ const Login = () => {
       <div className="app">
         <div className="login-form">
           <div className="title">Sign In</div>
-          {isSubmitted ? <div>User is successfully logged in</div> : renderForm}
+          {isSubmitted ? <div>Welcome {email}</div> : renderForm}
         </div>
       </div>
     </div>
