@@ -42,7 +42,9 @@ const View = () => {
           {animals.map((animal) => (
             <tr>
               <td key={animal.AnimalID}>{animal.Name} </td>
-              <td key={animal.AnimalID}>{animal.DateofBirth} </td>
+              <td key={animal.AnimalID}>
+                {new Date(animal.DateofBirth).toLocaleDateString()}{" "}
+              </td>
               <td key={animal.AnimalID}>{animal.Weight} </td>
               <td key={animal.AnimalID}>
                 {" "}

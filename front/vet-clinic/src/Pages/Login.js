@@ -70,7 +70,7 @@ const Login = () => {
       <Navbar />
       <div className="app">
         <div className="login-form">
-          <div className="title">Sign In</div>
+          <div className="title">Log in</div>
           {isSubmitted ? <div>Welcome {email}</div> : renderForm}
         </div>
       </div>

@@ -47,17 +47,19 @@ router.route("/animals").post((request, response) => {
     });
 });
 
-router.route("/editanimals").post(async (req, res) => {
-  console.log(req.body);
-  const result = await dboperations.updateAnimal(req.body);
-  console.log(result);
+router.route("/editanimals").put(async (req, res) => {
+  //console.log(req.body);
+  const result = await dboperations.updateAnimal(req.query);
+  console.log(req.query);
+  console.log("aicii");
   res.sendStatus(result.found ? 200 : 400);
 });
 
 router.route("/editvisit").put(async (req, res) => {
-  const result = await dboperations.updateVisit(req.body);
-  console.log(result.found);
+  const result = await dboperations.updateVisit(req.query);
+  //console.log(result.found);
   res.sendStatus(result.found ? 200 : 400);
+  console.log(req.query);
 });
 
 router.route("/deleteuser").delete(async (req, res) => {

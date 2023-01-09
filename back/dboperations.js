@@ -41,7 +41,7 @@ async function updateAnimal(animal) {
     let pool = await sql.connect(config);
     let updatedAnimal = await pool.query(
       `UPDATE Animals
-       SET Name = '${animal.Name}', Weight = ${animal.Weight}
+       SET Weight = ${animal.Weight}
        WHERE AnimalID = '${animal.AnimalID}'`
     );
     console.log(updatedAnimal);
@@ -59,15 +59,17 @@ async function updateAnimal(animal) {
   }
 }
 
+// update la toate viztele dintr- o zi mutate in alta zi
+
 async function updateVisit(visit) {
   try {
     let pool = await sql.connect(config);
     let updatedVisit = await pool.query(
       `UPDATE Visits
-       SET VisitDate = '${visit.VisitDate}'
-       WHERE VisitID = '${visit.VisitID}'`
+       SET VisitDate = '${visit.NewVisitDate}'
+       WHERE VisitDate = '${visit.visitDate}'`
     );
-
+    console.log(updatedVisit);
     if (updatedVisit.rowsAffected[0] === 0)
       return {
         found: false,

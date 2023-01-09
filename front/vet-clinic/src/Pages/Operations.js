@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { Navbar } from "../Components/Navbar";
 import "../Components/Styles/Table.css";
 
@@ -228,6 +227,128 @@ const Operations = () => {
     </div>
   );
 
+  //schimba toate datele dintr-o zi
+
+  const [newdate, setNewDate] = useState(null);
+  const [date, setDate] = useState(null);
+  const [updatedVisit, setUpdatedVisit] = useState(false);
+  const [clickVisit, setClickVisit] = useState(false);
+
+  const updateVisitDate = async (event) => {
+    event.preventDefault();
+
+    const params = new URLSearchParams({
+      NewVisitDate: newdate,
+      visitDate: date,
+    }).toString();
+    console.log(params);
+    const res = await fetch(url + `/editvisit?${params}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (res.status === 200) {
+      setUpdatedVisit(true);
+      setTimeout(() => {
+        navigate("/operations");
+      }, 3000);
+      console.log("Succes update");
+    } else {
+      alert("Errrrr");
+    }
+  };
+
+  const formEditVisit = (
+    <div className="form">
+      <form onSubmit={updateVisitDate}>
+        <div className="input-container">
+          <label>New date</label>
+          <input
+            type="date"
+            onChange={(e) => setNewDate(e.target.value)}
+            required
+          />
+        </div>
+        <div className="input-container">
+          <label>Old Date</label>
+          <input
+            type="date"
+            onChange={(e) => setDate(e.target.value)}
+            required
+          />
+        </div>
+        <div className="button-container">
+          <input type="submit" value={"Submit"} />
+        </div>
+      </form>
+    </div>
+  );
+
+  const [animalName, setAnimalName] = useState("");
+  const [newWeight, setNewWeight] = useState("");
+  const [id, setId] = useState("");
+  const [updatedAnimal, setUpdatedAnimal] = useState(false);
+  const [clickAnimal, setClickAnimal] = useState(false);
+
+  const updateAnimal = async (event) => {
+    event.preventDefault();
+
+    const params = new URLSearchParams({
+      Name: animalName,
+      Weight: newWeight,
+      AnimalID: id,
+    }).toString();
+    console.log(params);
+    const res = await fetch(url + `/editanimals?${params}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (res.status === 200) {
+      setUpdatedAnimal(true);
+      setTimeout(() => {
+        navigate("/operations");
+      }, 3000);
+      console.log("Succes update");
+    } else {
+      alert("Errrrr");
+    }
+  };
+
+  const formEditAnimal = (
+    <div className="form">
+      <form onSubmit={updateAnimal}>
+        <div className="input-container">
+          <label>Weight</label>
+          <input
+            type="text"
+            onChange={(e) => setNewWeight(e.target.value)}
+            required
+          />
+        </div>
+        <div className="input-container">
+          <label>Animal Name</label>
+          <input
+            type="text"
+            onChange={(e) => setAnimalName(e.target.value)}
+            required
+          />
+        </div>
+        <div className="input-container">
+          <label>Animal ID</label>
+          <input type="text" onChange={(e) => setId(e.target.value)} required />
+        </div>
+        <div className="button-container">
+          <input type="submit" value={"Submit"} />
+        </div>
+      </form>
+    </div>
+  );
+
   return (
     <div>
       <Navbar />
@@ -284,6 +405,40 @@ const Operations = () => {
                 <div>User inserted successfully</div>
               ) : (
                 formdeleteUser
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+      <button className="button" onClick={() => setClickVisit(!clickVisit)}>
+        {!clickVisit ? "Update visit" : "Hide"}
+      </button>
+      <div>
+        {clickVisit && (
+          <div className="app">
+            <div className="login-form">
+              <div className="title">Update Visit</div>
+              {updatedVisit ? (
+                <div>Visit Date updated successfully</div>
+              ) : (
+                formEditVisit
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+      <button className="button" onClick={() => setClickAnimal(!clickAnimal)}>
+        {!clickAnimal ? "Update animal" : "Hide"}
+      </button>
+      <div>
+        {clickAnimal && (
+          <div className="app">
+            <div className="login-form">
+              <div className="title">Update Visit</div>
+              {updatedAnimal ? (
+                <div>Animal updated successfully</div>
+              ) : (
+                formEditAnimal
               )}
             </div>
           </div>
