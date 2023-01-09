@@ -124,6 +124,110 @@ const Operations = () => {
         </div>
       </div>
     );*/
+
+  const [diagnosis, setDiagnosis] = useState("");
+  const [clickDeleteM, setClickDeleteM] = useState(false);
+  const [medIsDeleted, setMedIsDeleted] = useState(false);
+
+  const deleteMedication = async (event) => {
+    event.preventDefault();
+
+    const params = new URLSearchParams({
+      Diagnosis: diagnosis,
+    }).toString();
+    const res = await fetch(url + `/deletemedication?${params}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (res.status === 200) {
+      setMedIsDeleted(true);
+      setTimeout(() => {
+        navigate("/operations");
+      }, 3000);
+      console.log("Succes del");
+    } else {
+      alert("Errrrr");
+    }
+  };
+
+  const formdeleteMedication = (
+    <div className="form">
+      <form onSubmit={deleteMedication}>
+        <div className="input-container">
+          <label>Diagnosis</label>
+          <input
+            type="text"
+            onChange={(e) => setDiagnosis(e.target.value)}
+            required
+          />
+        </div>
+        <div className="button-container">
+          <input type="submit" value={"Submit"} />
+        </div>
+      </form>
+    </div>
+  );
+
+  // const [user, setUser] = useState("");
+  const [fname, setFname] = useState("");
+  const [lname, setLname] = useState("");
+  const [clickDeleteUser, setClickDeleteUser] = useState(false);
+  const [userIsDeleted, setUserIsDeleted] = useState(false);
+
+  const deleteUser = async (event) => {
+    event.preventDefault();
+
+    const params = new URLSearchParams({
+      FirstName: fname,
+      LastName: lname,
+    }).toString();
+    const res = await fetch(url + `/deleteuser?${params}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (res.status === 200) {
+      setUserIsDeleted(true);
+      setTimeout(() => {
+        navigate("/operations");
+      }, 3000);
+      console.log("Succes del");
+    } else {
+      alert("Errrrr");
+    }
+  };
+
+  const formdeleteUser = (
+    <div className="form">
+      <form onSubmit={deleteUser}>
+        <div className="input-container">
+          <label>First Name</label>
+          <input
+            type="text"
+            onChange={(e) => setFname(e.target.value)}
+            required
+          />
+        </div>
+        <div className="input-container">
+          <label>Last Name</label>
+          <input
+            type="text"
+            onChange={(e) => setLname(e.target.value)}
+            required
+          />
+        </div>
+        <div className="button-container">
+          <input type="submit" value={"Submit"} />
+        </div>
+      </form>
+    </div>
+  );
+
   return (
     <div>
       <Navbar />
@@ -143,6 +247,43 @@ const Operations = () => {
                 <div>Animal inserted successfully</div>
               ) : (
                 renderForm
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+      <button className="button" onClick={() => setClickDeleteM(!clickDeleteM)}>
+        {!clickDeleteM ? "Delete Medication" : "Hide"}
+      </button>
+      <div>
+        {clickDeleteM && (
+          <div className="app">
+            <div className="login-form">
+              <div className="title">Delete Nedication</div>
+              {medIsDeleted ? (
+                <div>Medication deleted successfully</div>
+              ) : (
+                formdeleteMedication
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+      <button
+        className="button"
+        onClick={() => setClickDeleteUser(!clickDeleteUser)}
+      >
+        {!clickDeleteUser ? "Delete User" : "Hide"}
+      </button>
+      <div>
+        {clickDeleteUser && (
+          <div className="app">
+            <div className="login-form">
+              <div className="title">Delete User</div>
+              {userIsDeleted ? (
+                <div>User inserted successfully</div>
+              ) : (
+                formdeleteUser
               )}
             </div>
           </div>

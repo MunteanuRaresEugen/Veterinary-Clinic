@@ -28,8 +28,6 @@ const View = () => {
     }
   };
 
-  console.log(animals);
-
   const showlist = (
     <>
       Animals:
@@ -50,6 +48,53 @@ const View = () => {
                 {" "}
                 {animal.Vaccinated ? <>Vaccinat</> : <>Nevaccinat</>}{" "}
               </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
+  );
+
+  // all users from vet clinic
+
+  const [clickGetUser, setClickGetUser] = useState(false);
+  const [users, setUsers] = useState([]);
+
+  const handleClickUsers = async (event) => {
+    event.preventDefault();
+
+    const res = await fetch(url + "/getusers", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    setClickGetUser(!clickGetUser);
+
+    if (res.status === 200) {
+      const results = await res.json();
+      setUsers(results);
+
+      //console.log(animals);
+    }
+  };
+
+  const showlistUsers = (
+    <>
+      Users:
+      <table className="table">
+        <tr>
+          <td>First Name</td>
+          <td>Last Name</td>
+          <td>Age</td>
+        </tr>
+        <tbody>
+          {users.map((user) => (
+            <tr>
+              <td key={user.OwnerID}>{user.FirstName} </td>
+              <td key={user.OwnerID}>{user.LastName} </td>
+              <td key={user.OwnerID}>{user.Age} </td>
             </tr>
           ))}
         </tbody>
@@ -716,6 +761,12 @@ const View = () => {
           {isClicked && <div>{showlist}</div>}
           <button className="button" onClick={handleClick}>
             {!isClicked ? "View animals" : "Hide"}
+          </button>
+        </div>
+        <div className="child">
+          {clickGetUser && <div>{showlistUsers}</div>}
+          <button className="button" onClick={handleClickUsers}>
+            {!clickGetUser ? "View users" : "Hide"}
           </button>
         </div>
         <div className="child">

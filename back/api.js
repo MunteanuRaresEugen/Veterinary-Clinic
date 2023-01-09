@@ -21,24 +21,17 @@ router.use((request, response, next) => {
   next();
 });
 
-/*router.route("/animals").get((request, response) => {
-  dboperations.getAnimals().then((result) => {
-    //console.log(result);
-    response.json(result[0]);
-  });
-});*/
+// tabele pentru afisare
 
 router.route("/animals").get(async (req, res) => {
   const result = await dboperations.getAnimals();
   res.status(200).json(result[0]);
 });
 
-/*router.route("/animals/:id").get((request, response) => {
-  dboperations.getAnimal(request.params.id).then((result) => {
-    //console.log(result);
-    response.sendStatus(200).json(result[0]);
-  });
-});*/
+router.route("/getusers").get(async (req, res) => {
+  const result = await dboperations.getUsers();
+  res.status(200).json(result[0]);
+});
 
 router.route("/animals").post((request, response) => {
   console.log(request.body);
@@ -61,23 +54,21 @@ router.route("/editanimals").post(async (req, res) => {
   res.sendStatus(result.found ? 200 : 400);
 });
 
-router.route("/editvisit").post(async (req, res) => {
+router.route("/editvisit").put(async (req, res) => {
   const result = await dboperations.updateVisit(req.body);
   console.log(result.found);
   res.sendStatus(result.found ? 200 : 400);
 });
 
 router.route("/deleteuser").delete(async (req, res) => {
-  console.log(req.body);
-  const result = await dboperations.deleteUser(req.body);
-  console.log(result.deleted);
+  const result = await dboperations.deleteUser(req.query);
+  console.log(result.deleted, result.deletedUser);
   res.sendStatus(result.deleted ? 200 : 400);
 });
 
 router.route("/deletemedication").delete(async (req, res) => {
-  console.log(req.body);
-  const result = await dboperations.deleteMedication(req.body);
-  console.log(result.deleted);
+  const result = await dboperations.deleteMedication(req.query);
+  console.log(result.deleted, result.deleteMedication);
   res.sendStatus(result.deleted ? 200 : 400);
 });
 

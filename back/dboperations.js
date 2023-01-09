@@ -13,18 +13,16 @@ async function getAnimals() {
   }
 }
 
-/*async function getAnimal(animalid) {
+async function getUsers() {
   try {
     let pool = await sql.connect(config);
-    let anim = await pool
-      .request()
-      .input("input_parameter", sql.Int, animalid)
-      .query("SELECT * from Animals where AnimalID = @input_parameter");
-    return anim.recordsets;
+    let users = await pool.request().query("SELECT * from Owners");
+    console.log("user");
+    return users.recordsets;
   } catch (error) {
     console.log(error);
   }
-}*/
+}
 
 async function addAnimal(animal) {
   try {
@@ -102,6 +100,7 @@ async function deleteUser(user) {
   } catch (err) {
     console.log(err);
     return {
+      deletedUser: deletedUser.recordset,
       deleted: false,
     };
   }
@@ -121,6 +120,7 @@ async function deleteMedication(medication) {
       };
     else
       return {
+        deleteMedication: deletedMedication.recordset,
         deleted: true,
       };
   } catch (err) {
@@ -386,7 +386,7 @@ module.exports = {
   login: login,
   register: register,
   updateAnimal: updateAnimal,
-  updateVisits: updateVisit,
+  updateVisit: updateVisit,
   deleteUser: deleteUser,
   deleteMedication: deleteMedication,
   speciesAnimal: speciesAnimal,
@@ -399,4 +399,5 @@ module.exports = {
   visitnovacc: visitnovacc,
   visitspecies: visitspecies,
   historyanimal: historyanimal,
+  getUsers: getUsers,
 };
